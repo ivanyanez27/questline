@@ -33,7 +33,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/\" element={<HomePage />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       
@@ -73,7 +73,7 @@ function AppRoutes() {
         } 
       />
       
-      <Route path="*" element={<Navigate to="/\" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
