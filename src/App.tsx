@@ -10,14 +10,14 @@ import { AchievementsPage } from './pages/AchievementsPage';
 import { LoginPage, SignupPage } from './pages/AuthPages';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { JourneyProvider } from './contexts/JourneyContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 
-// Protected route wrapper component
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500" />
       </div>
     );
@@ -30,7 +30,6 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   return children;
 }
 
-// Main routing component
 function AppRoutes() {
   return (
     <Routes>
@@ -82,17 +81,24 @@ function AppRoutes() {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <JourneyProvider>
-          <div className="min-h-screen bg-gray-50">
-            <Navbar />
-            <main>
-              <AppRoutes />
-            </main>
-            <Toaster position="top-right" />
-          </div>
-        </JourneyProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <JourneyProvider>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+              <Navbar />
+              <main>
+                <AppRoutes />
+              </main>
+              <Toaster 
+                position="top-right"
+                toastOptions={{
+                  className: 'dark:bg-gray-800 dark:text-white',
+                }} 
+              />
+            </div>
+          </JourneyProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </Router>
   );
 }

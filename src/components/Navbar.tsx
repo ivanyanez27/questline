@@ -3,10 +3,16 @@ import { Link, useLocation } from 'react-router-dom';
 import { MapPin, Menu, X, User, LogOut, Award } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAuth } from '../contexts/AuthContext';
+import { ThemeToggle } from './ThemeToggle';
 
 type NavItem = {
   path: string;
   label: string;
+  icon?: React.ReactNode;
+  onClick?: () => Promise<void>;
+};
+
+type AuthItem = NavItem & {
   icon?: React.ReactNode;
   onClick?: () => Promise<void>;
 };
@@ -18,13 +24,13 @@ export function Navbar() {
   
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   
-  const navItems = [
+  const navItems: NavItem[] = [
     { path: '/', label: 'Home' },
     { path: '/journeys', label: 'My Journeys' },
     { path: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
   ];
   
-  const authItems: NavItem[] = user ? [
+  const authItems: AuthItem[] = user ? [
     { path: '/profile', label: 'Profile', icon: <User className="w-4 h-4 mr-2" /> },
     { 
       path: '#', 
@@ -41,13 +47,13 @@ export function Navbar() {
   ];
   
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <MapPin className="w-8 h-8 text-purple-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Questline</span>
+              <MapPin className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+              <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Questline</span>
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -57,8 +63,8 @@ export function Navbar() {
                   to={item.path}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                     location.pathname === item.path
-                      ? 'border-purple-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-purple-500 text-gray-900 dark:text-white'
+                      : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:border-gray-300'
                   }`}
                 >
                   {item.icon && <span className="mr-2">{item.icon}</span>}
@@ -68,7 +74,9 @@ export function Navbar() {
             </div>
           </div>
           
-          <div className="hidden sm:ml-6 sm:flex sm:items-center">
+          <div className="hidden sm:ml-6 sm:flex sm:items-center space-x-4">
+            <ThemeToggle />
+            
             {user ? (
               <div className="flex items-center space-x-4">
                 <Link to="/new-journey">
@@ -80,7 +88,7 @@ export function Navbar() {
                 <div className="relative">
                   <button
                     type="button"
-                    className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                    className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800"
                     onClick={toggleMenu}
                   >
                     <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white">
@@ -89,13 +97,13 @@ export function Navbar() {
                   </button>
                   
                   {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
                       {authItems.map((item, index) => (
                         <React.Fragment key={index}>
                           {item.onClick ? (
                             <button
                               onClick={item.onClick}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center"
                             >
                               {item.icon}
                               {item.label}
@@ -103,7 +111,7 @@ export function Navbar() {
                           ) : (
                             <Link
                               to={item.path}
-                              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center"
                               onClick={() => setIsMenuOpen(false)}
                             >
                               {item.icon}
@@ -132,10 +140,11 @@ export function Navbar() {
             )}
           </div>
           
-          <div className="flex items-center sm:hidden">
+          <div className="flex items-center sm:hidden space-x-4">
+            <ThemeToggle />
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-200 hover:text-gray-500 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
               onClick={toggleMenu}
             >
               {isMenuOpen ? (
@@ -158,8 +167,8 @@ export function Navbar() {
                 to={item.path}
                 className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                   location.pathname === item.path
-                    ? 'border-purple-500 text-purple-700 bg-purple-50'
-                    : 'border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800'
+                    ? 'border-purple-500 text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-gray-700'
+                    : 'border-transparent text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -173,7 +182,7 @@ export function Navbar() {
             {user && (
               <Link
                 to="/new-journey"
-                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800"
+                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 New Journey
@@ -181,7 +190,7 @@ export function Navbar() {
             )}
           </div>
           
-          <div className="pt-4 pb-3 border-t border-gray-200">
+          <div className="pt-4 pb-3 border-t border-gray-200 dark:border-gray-600">
             {user && (
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
@@ -190,8 +199,8 @@ export function Navbar() {
                   </div>
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">{user.name || 'User'}</div>
-                  <div className="text-sm font-medium text-gray-500">{user.email}</div>
+                  <div className="text-base font-medium text-gray-800 dark:text-white">{user.name || 'User'}</div>
+                  <div className="text-sm font-medium text-gray-500 dark:text-gray-300">{user.email}</div>
                 </div>
               </div>
             )}
@@ -202,7 +211,7 @@ export function Navbar() {
                   {item.onClick ? (
                     <button
                       onClick={item.onClick}
-                      className="block w-full text-left px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 flex items-center"
+                      className="block w-full text-left px-4 py-2 text-base font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
                     >
                       {item.icon}
                       {item.label}
@@ -210,7 +219,7 @@ export function Navbar() {
                   ) : (
                     <Link
                       to={item.path}
-                      className="block px-4 py-2 text-base font-medium text-gray-600 hover:bg-gray-100 flex items-center"
+                      className="block px-4 py-2 text-base font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.icon}
