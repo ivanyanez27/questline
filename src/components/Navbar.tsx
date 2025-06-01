@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { MapPin, Menu, X, User, LogOut } from 'lucide-react';
+import { MapPin, Menu, X, User, LogOut, Award } from 'lucide-react';
 import { Button } from './ui/Button';
 import { useAuth } from '../contexts/AuthContext';
+
+type NavItem = {
+  path: string;
+  label: string;
+  icon?: React.ReactNode;
+  onClick?: () => Promise<void>;
+};
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -14,9 +21,10 @@ export function Navbar() {
   const navItems = [
     { path: '/', label: 'Home' },
     { path: '/journeys', label: 'My Journeys' },
+    { path: '/achievements', label: 'Achievements', icon: <Award className="w-4 h-4" /> },
   ];
   
-  const authItems = user ? [
+  const authItems: NavItem[] = user ? [
     { path: '/profile', label: 'Profile', icon: <User className="w-4 h-4 mr-2" /> },
     { 
       path: '#', 
@@ -53,6 +61,7 @@ export function Navbar() {
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
+                  {item.icon && <span className="mr-2">{item.icon}</span>}
                   {item.label}
                 </Link>
               ))}
@@ -154,7 +163,10 @@ export function Navbar() {
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                {item.label}
+                <span className="flex items-center">
+                  {item.icon && <span className="mr-2">{item.icon}</span>}
+                  {item.label}
+                </span>
               </Link>
             ))}
             

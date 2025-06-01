@@ -6,10 +6,12 @@ import { HomePage } from './pages/HomePage';
 import { JourneysPage } from './pages/JourneysPage';
 import { JourneyDetailPage } from './pages/JourneyDetailPage';
 import { NewJourneyPage } from './pages/NewJourneyPage';
+import { AchievementsPage } from './pages/AchievementsPage';
 import { LoginPage, SignupPage } from './pages/AuthPages';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { JourneyProvider } from './contexts/JourneyContext';
 
+// Protected route wrapper component
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
   
@@ -28,10 +30,11 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   return children;
 }
 
+// Main routing component
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
+      <Route path="/\" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
       
@@ -61,8 +64,17 @@ function AppRoutes() {
           </RequireAuth>
         } 
       />
+
+      <Route 
+        path="/achievements" 
+        element={
+          <RequireAuth>
+            <AchievementsPage />
+          </RequireAuth>
+        } 
+      />
       
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/\" replace />} />
     </Routes>
   );
 }

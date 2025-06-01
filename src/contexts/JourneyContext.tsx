@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase, Journey, CheckIn, ReflectionGate } from '../lib/supabase';
+import { supabase, Journey, CheckIn, ReflectionGate, monitorDatabaseOperations } from '../lib/supabase';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
@@ -34,11 +34,14 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
     
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('journeys')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      const { data, error } = await monitorDatabaseOperations.select(
+        'journeys',
+        supabase
+          .from('journeys')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+      );
 
       if (error) throw error;
       setJourneys(data || []);

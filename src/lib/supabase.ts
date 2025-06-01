@@ -12,6 +12,58 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Initialize Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
+// Database monitoring and debugging
+export const monitorDatabaseOperations = {
+  async select(table: string, query: any) {
+    console.group(`📥 Fetching from ${table}`);
+    console.time('Query Duration');
+    const result = await query;
+    console.timeEnd('Query Duration');
+    
+    if (result.error) {
+      console.error('Query Error:', result.error);
+    } else {
+      console.log('Data:', result.data);
+      console.log('Count:', result.data?.length || 0);
+    }
+    console.groupEnd();
+    return result;
+  },
+
+  async insert(table: string, data: any) {
+    console.group(`📤 Inserting into ${table}`);
+    console.log('Data to insert:', data);
+    console.time('Insert Duration');
+    const result = await supabase.from(table).insert(data).select();
+    console.timeEnd('Insert Duration');
+    
+    if (result.error) {
+      console.error('Insert Error:', result.error);
+    } else {
+      console.log('Inserted Data:', result.data);
+    }
+    console.groupEnd();
+    return result;
+  },
+
+  async update(table: string, id: string, data: any) {
+    console.group(`🔄 Updating ${table}`);
+    console.log('ID:', id);
+    console.log('Update data:', data);
+    console.time('Update Duration');
+    const result = await supabase.from(table).update(data).eq('id', id).select();
+    console.timeEnd('Update Duration');
+    
+    if (result.error) {
+      console.error('Update Error:', result.error);
+    } else {
+      console.log('Updated Data:', result.data);
+    }
+    console.groupEnd();
+    return result;
+  }
+};
+
 /**
  * User type definition
  * Represents a user in the system with their basic profile information
@@ -41,6 +93,36 @@ export type Journey = {
   current_day: number;
   streak: number;
   truth_score: number;
+  points: number;
+  total_check_ins: number;
+  total_reflection_gates_completed: number;
+};
+
+/**
+ * Achievement type definition
+ * Represents a gamification achievement that users can earn
+ */
+export type Achievement = {
+  id: string;
+  name: string;
+  description: string;
+  criteria_type: 'streak' | 'total_check_ins' | 'journey_completed' | 'reflection_gates_completed';
+  criteria_value: number;
+  points_reward: number;
+  image_url: string;
+  created_at: string;
+};
+
+/**
+ * UserAchievement type definition
+ * Represents an achievement earned by a user
+ */
+export type UserAchievement = {
+  id: string;
+  user_id: string;
+  achievement_id: string;
+  earned_at: string;
+  achievement?: Achievement;
 };
 
 /**
@@ -77,6 +159,78 @@ export type ReflectionGate = {
 
 // Database schema setup
 export const createTables = async () => {
+  // Create achievements table
+  const { error: achievementsError } = await supabase.rpc('create_achievements_table', {
+    sql: `
+      CREATE TABLE IF NOT EXISTS achievements (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        description TEXT,
+        criteria_type TEXT NOT NULL,
+        criteria_value INTEGER NOT NULL,
+        points_reward INTEGER DEFAULT 0 NOT NULL,
+        image_url TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now())
+      );
+
+      -- Enable Row Level Security
+      ALTER TABLE achievements ENABLE ROW LEVEL SECURITY;
+
+      -- Create policies
+      CREATE POLICY "Enable read access for all users"
+        ON achievements FOR SELECT
+        USING (TRUE);
+    `
+  });
+
+  if (achievementsError) {
+    console.error('Error creating achievements table:', achievementsError);
+  }
+
+  // Create user_achievements table
+  const { error: userAchievementsError } = await supabase.rpc('create_user_achievements_table', {
+    sql: `
+      CREATE TABLE IF NOT EXISTS user_achievements (
+        id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+        user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+        achievement_id UUID REFERENCES achievements(id) ON DELETE CASCADE NOT NULL,
+        earned_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
+        CONSTRAINT unique_user_achievement UNIQUE (user_id, achievement_id)
+      );
+
+      -- Enable Row Level Security
+      ALTER TABLE user_achievements ENABLE ROW LEVEL SECURITY;
+
+      -- Create policies
+      CREATE POLICY "Users can view their own earned achievements"
+        ON user_achievements FOR SELECT
+        USING (auth.uid() = user_id);
+
+      CREATE POLICY "Users can insert their own earned achievements"
+        ON user_achievements FOR INSERT
+        WITH CHECK (auth.uid() = user_id);
+    `
+  });
+
+  if (userAchievementsError) {
+    console.error('Error creating user_achievements table:', userAchievementsError);
+  }
+
+  // Add new columns to journeys table
+  const { error: journeysError } = await supabase.rpc('alter_journeys_table', {
+    sql: `
+      ALTER TABLE journeys
+      ADD COLUMN IF NOT EXISTS points INTEGER DEFAULT 0 NOT NULL,
+      ADD COLUMN IF NOT EXISTS total_check_ins INTEGER DEFAULT 0 NOT NULL,
+      ADD COLUMN IF NOT EXISTS total_reflection_gates_completed INTEGER DEFAULT 0 NOT NULL;
+    `
+  });
+
+  if (journeysError) {
+    console.error('Error modifying journeys table:', journeysError);
+  }
+
+  // Create check_ins table if it doesn't exist
   const { error: checkInsError } = await supabase.rpc('create_check_ins_table', {
     sql: `
       CREATE TABLE IF NOT EXISTS check_ins (
