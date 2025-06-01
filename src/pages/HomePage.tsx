@@ -9,6 +9,7 @@ import { JourneyCard } from '../components/JourneyCard';
 import { CheckInForm } from '../components/CheckInForm';
 import { ReflectionGateForm } from '../components/ReflectionGateForm';
 import { canCheckInToday, generateJourneyNarrative } from '../lib/utils';
+import { PixelClimber } from '../components/PixelClimber';
 
 export function HomePage() {
   const { user } = useAuth();
@@ -221,11 +222,9 @@ function LandingSection() {
           </div>
         </div>
         <div className="lg:absolute lg:inset-y-0 lg:right-0 lg:w-1/2">
-          <img
-            className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full"
-            src="https://images.pexels.com/photos/1295138/pexels-photo-1295138.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-            alt="Person hiking on a mountain path"
-          />
+          <div className="h-56 w-full sm:h-72 md:h-96 lg:w-full lg:h-full">
+            <PixelClimber />
+          </div>
         </div>
       </div>
       

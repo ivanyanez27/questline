@@ -1,3 +1,20 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+  .clip-mountain {
+    clip-path: polygon(15% 100%, 85% 100%, 70% 30%, 50% 0%, 30% 30%);
+  }
+
+  .clip-snow {
+    clip-path: polygon(30% 100%, 70% 100%, 60% 0%, 40% 0%);
+  }
+
+  .bg-pixel-climber {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAOxAAADsQBlSsOGwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAABUSURBVDiNY2AYBfQMDP+Z/jP9/8/4/z8jIyMjExMTEwM+wMLCwsDGxsaAD7CysjIwMzPjVc/ExIRXMQsLC0H1/xkYGBgZ8QYpAzMzMwMrKyvDKAAAuG4K6N1P1vYAAAAASUVORK5CYII=");
+    background-size: contain;
+    background-repeat: no-repeat;
+    image-rendering: pixelated;
+  }
+}

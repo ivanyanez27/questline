@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase, Journey, CheckIn, ReflectionGate } from '../lib/supabase';
 import { useAuth } from './AuthContext';
+import toast from 'react-hot-toast';
 
 type JourneyContextType = {
   journeys: Journey[];
@@ -28,7 +29,6 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch user's journeys
   const fetchJourneys = async () => {
     if (!user) return;
     
@@ -44,19 +44,17 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
       setJourneys(data || []);
     } catch (err) {
       setError((err as Error).message);
+      toast.error('Failed to fetch journeys');
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch current active journey
   const fetchCurrentJourney = async () => {
     if (!user) return;
     
     try {
       setLoading(true);
-      
-      // Get the most recent active journey
       const { data, error } = await supabase
         .from('journeys')
         .select('*')
@@ -68,156 +66,183 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        // PGRST116 is "no rows returned" which is ok
         throw error;
       }
 
+      setCurrentJourney(data || null);
+
       if (data) {
-        setCurrentJourney(data);
-        
-        // Fetch check-ins for this journey
-        const { data: checkInsData, error: checkInsError } = await supabase
-          .from('check_ins')
-          .select('*')
-          .eq('journey_id', data.id)
-          .order('day', { ascending: true });
-          
-        if (checkInsError) throw checkInsError;
-        setCheckIns(checkInsData || []);
-        
-        // Fetch reflection gates for this journey
-        const { data: gatesData, error: gatesError } = await supabase
-          .from('reflection_gates')
-          .select('*')
-          .eq('journey_id', data.id)
-          .order('day', { ascending: true });
-          
-        if (gatesError) throw gatesError;
-        setReflectionGates(gatesData || []);
-      } else {
-        setCurrentJourney(null);
-        setCheckIns([]);
-        setReflectionGates([]);
+        const [checkInsResponse, gatesResponse] = await Promise.all([
+          supabase
+            .from('check_ins')
+            .select('*')
+            .eq('journey_id', data.id)
+            .order('day', { ascending: true }),
+          supabase
+            .from('reflection_gates')
+            .select('*')
+            .eq('journey_id', data.id)
+            .order('day', { ascending: true })
+        ]);
+
+        if (checkInsResponse.error) throw checkInsResponse.error;
+        if (gatesResponse.error) throw gatesResponse.error;
+
+        setCheckIns(checkInsResponse.data || []);
+        setReflectionGates(gatesResponse.data || []);
       }
     } catch (err) {
       setError((err as Error).message);
+      toast.error('Failed to fetch current journey');
     } finally {
       setLoading(false);
     }
   };
 
-  // Create a new journey
   const createJourney = async (journeyData: Partial<Journey>) => {
-    if (!user) return { data: null, error: new Error('User not authenticated') };
-    
+    if (!user) {
+      return { data: null, error: new Error('User not authenticated') };
+    }
+
     try {
+      // Validate required fields
+      const requiredFields = ['title', 'description', 'habit', 'duration', 'theme'];
+      const missingFields = requiredFields.filter(field => !journeyData[field as keyof typeof journeyData]);
+      
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+      }
+
+      // Prepare journey data with all required fields
+      const newJourney = {
+        ...journeyData,
+        user_id: user.id,
+        started_at: new Date().toISOString(),
+        current_day: 0,
+        streak: 0,
+        truth_score: 0
+      };
+
+      // Create journey
       const { data, error } = await supabase
         .from('journeys')
-        .insert([{ ...journeyData, user_id: user.id }])
+        .insert([newJourney])
         .select()
         .single();
-        
+
       if (error) throw error;
-      
-      // Create reflection gates at specific intervals
-      const gates = [];
-      const duration = journeyData.duration || 30;
-      
-      // Add gates at days 3, 7, 14, 21, and final day
-      const gateDays = [3, 7, 14, 21, duration];
-      for (const day of gateDays) {
-        if (day <= duration) {
-          gates.push({
-            journey_id: data.id,
-            day,
-            completed: false,
-            prompt: `Day ${day} Reflection: How has this journey changed you so far?`
-          });
+
+      // Create reflection gates
+      if (data) {
+        const gates = [];
+        const duration = journeyData.duration || 30;
+        const gateDays = [3, 7, 14, 21, duration];
+        
+        for (const day of gateDays) {
+          if (day <= duration) {
+            gates.push({
+              journey_id: data.id,
+              day,
+              completed: false,
+              prompt: `Day ${day} Reflection: How has this journey changed you so far?`
+            });
+          }
+        }
+
+        if (gates.length > 0) {
+          const { error: gatesError } = await supabase
+            .from('reflection_gates')
+            .insert(gates);
+
+          if (gatesError) throw gatesError;
         }
       }
-      
-      if (gates.length > 0) {
-        await supabase.from('reflection_gates').insert(gates);
-      }
-      
+
       await fetchJourneys();
+      toast.success('Journey created successfully!');
       return { data, error: null };
     } catch (err) {
-      return { data: null, error: err as Error };
+      const error = err as Error;
+      toast.error(error.message);
+      return { data: null, error };
     }
   };
 
-  // Update a journey
   const updateJourney = async (id: string, updates: Partial<Journey>) => {
     try {
       const { error } = await supabase
         .from('journeys')
         .update(updates)
-        .eq('id', id);
-        
+        .eq('id', id)
+        .eq('user_id', user?.id);
+
       if (error) throw error;
-      
+
       await fetchJourneys();
       if (currentJourney?.id === id) {
         await fetchCurrentJourney();
       }
-      
+
+      toast.success('Journey updated successfully');
       return { error: null };
     } catch (err) {
-      return { error: err as Error };
+      const error = err as Error;
+      toast.error(error.message);
+      return { error };
     }
   };
 
-  // Create a check-in
   const createCheckIn = async (checkInData: Partial<CheckIn>) => {
     try {
       const { data, error } = await supabase
         .from('check_ins')
-        .insert([checkInData])
+        .insert([{ ...checkInData, user_id: user?.id }])
         .select()
         .single();
-        
+
       if (error) throw error;
-      
-      // Update journey streak and current day
+
       if (currentJourney && checkInData.journey_id === currentJourney.id) {
         const updates: Partial<Journey> = {
           current_day: Math.max((currentJourney.current_day || 0) + 1, (checkInData.day || 0) + 1),
           streak: (currentJourney.streak || 0) + 1,
           truth_score: Math.round(
-            ((currentJourney.truth_score * (currentJourney.current_day || 0)) + 
+            ((currentJourney.truth_score * (currentJourney.current_day || 0)) +
               (checkInData.truth_rating || 5)) / ((currentJourney.current_day || 0) + 1)
           )
         };
-        
+
         await updateJourney(currentJourney.id, updates);
       }
-      
+
       await fetchCurrentJourney();
       return { data, error: null };
     } catch (err) {
-      return { data: null, error: err as Error };
+      const error = err as Error;
+      toast.error(error.message);
+      return { data: null, error };
     }
   };
 
-  // Complete a reflection gate
   const completeReflectionGate = async (gateId: string, response: string) => {
     try {
       const { error } = await supabase
         .from('reflection_gates')
         .update({ completed: true, response })
         .eq('id', gateId);
-        
+
       if (error) throw error;
-      
+
       await fetchCurrentJourney();
+      toast.success('Reflection completed successfully');
       return { error: null };
     } catch (err) {
-      return { error: err as Error };
+      const error = err as Error;
+      toast.error(error.message);
+      return { error };
     }
   };
 
-  // Load data when user changes
   useEffect(() => {
     if (user) {
       fetchJourneys();
