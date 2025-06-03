@@ -58,7 +58,7 @@ export function LoginPage() {
                     },
                   },
                 }}
-                providers={['google', 'apple', 'azure']}
+                providers={['google', 'apple', 'facebook']}
                 redirectTo={`${window.location.origin}/auth/callback?returnTo=${returnTo}`}
                 onlyThirdPartyProviders={false}
                 localization={{
@@ -125,7 +125,7 @@ export function SignupPage() {
                     },
                   },
                 }}
-                providers={['google', 'apple', 'azure']}
+                providers={['google', 'apple', 'facebook']}
                 redirectTo={`${window.location.origin}/auth/callback`}
                 onlyThirdPartyProviders={false}
                 localization={{
