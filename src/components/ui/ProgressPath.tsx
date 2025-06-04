@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
@@ -12,40 +11,38 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
   // Define theme-specific colors
   const themeColors = {
     fantasy: {
-      path: 'from-purple-900 to-purple-700',
-      milestone: 'bg-yellow-400',
-      track: 'bg-purple-100',
-      particle: 'bg-purple-300'
+      path: 'from-primary-600 to-primary-400',
+      milestone: 'bg-accent-300',
+      track: 'bg-primary-100 dark:bg-primary-900/30',
+      particle: 'bg-primary-300 dark:bg-primary-400'
     },
     'sci-fi': {
-      path: 'from-cyan-600 to-blue-500',
-      milestone: 'bg-green-400',
-      track: 'bg-cyan-100',
-      particle: 'bg-cyan-300'
+      path: 'from-secondary-500 to-secondary-400',
+      milestone: 'bg-accent-400',
+      track: 'bg-secondary-100 dark:bg-secondary-900/30',
+      particle: 'bg-secondary-300 dark:bg-secondary-400'
     },
     adventure: {
-      path: 'from-amber-600 to-amber-400',
-      milestone: 'bg-emerald-500',
-      track: 'bg-amber-100',
-      particle: 'bg-amber-300'
+      path: 'from-accent-500 to-accent-400',
+      milestone: 'bg-secondary-400',
+      track: 'bg-accent-100 dark:bg-accent-900/30',
+      particle: 'bg-accent-300 dark:bg-accent-400'
     },
     mystery: {
-      path: 'from-slate-800 to-slate-600',
-      milestone: 'bg-purple-400',
-      track: 'bg-slate-200',
-      particle: 'bg-slate-400'
+      path: 'from-gray-800 to-gray-600',
+      milestone: 'bg-primary-400',
+      track: 'bg-gray-200 dark:bg-gray-700',
+      particle: 'bg-gray-400 dark:bg-gray-500'
     }
   };
 
   const colors = themeColors[theme];
 
-  // Create milestones at specific percentages
   const milestones = [0, 25, 50, 75, 100].map((milestone) => ({
     position: milestone,
     reached: progress >= milestone,
   }));
 
-  // Generate path curves based on theme
   const getPathD = (theme: string) => {
     switch (theme) {
       case 'fantasy':
@@ -63,7 +60,6 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
 
   return (
     <div className={cn('relative w-full h-40 px-4', className)}>
-      {/* Track */}
       <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
         <path
           d={getPathD(theme)}
@@ -74,7 +70,6 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
           className={colors.track}
         />
         
-        {/* Progress path */}
         <path
           d={getPathD(theme)}
           fill="none"
@@ -86,7 +81,6 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
           className="transition-all duration-1000 ease-in-out"
         />
         
-        {/* Gradients */}
         <defs>
           <linearGradient id={`${theme}-progress-gradient`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" className={`stop-${colors.path.split(' ')[0]}`} />
@@ -99,7 +93,6 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
         </defs>
       </svg>
       
-      {/* Milestones */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
         {milestones.map((milestone, index) => {
           const position = 10 + (milestone.position * 0.8);
@@ -108,7 +101,7 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
               key={index}
               className={cn(
                 'absolute w-4 h-4 rounded-full -translate-x-1/2 -translate-y-1/2',
-                milestone.reached ? colors.milestone : 'bg-gray-300'
+                milestone.reached ? colors.milestone : 'bg-gray-300 dark:bg-gray-600'
               )}
               style={{
                 left: `${position}%`,
@@ -128,7 +121,6 @@ export function ProgressPath({ progress, theme, className }: ProgressPathProps) 
         })}
       </div>
       
-      {/* Animated particles */}
       {progress > 5 && (
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           {[...Array(5)].map((_, i) => {

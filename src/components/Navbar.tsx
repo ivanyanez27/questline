@@ -12,10 +12,7 @@ type NavItem = {
   onClick?: () => Promise<void>;
 };
 
-type AuthItem = NavItem & {
-  icon?: React.ReactNode;
-  onClick?: () => Promise<void>;
-};
+type AuthItem = NavItem;
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -47,13 +44,13 @@ export function Navbar() {
   ];
   
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200">
+    <nav className="bg-bg-card-light dark:bg-bg-card-dark shadow-sm transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <MapPin className="w-8 h-8 text-purple-600 dark:text-purple-400" />
-              <span className="ml-2 text-xl font-bold text-gray-900 dark:text-white">Questline</span>
+              <MapPin className="w-8 h-8 text-primary-500 dark:text-primary-400" />
+              <span className="ml-2 text-xl font-bold text-text-primary dark:text-white">Questline</span>
             </Link>
             
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
@@ -63,8 +60,8 @@ export function Navbar() {
                   to={item.path}
                   className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
                     location.pathname === item.path
-                      ? 'border-purple-500 text-gray-900 dark:text-white'
-                      : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white hover:border-gray-300'
+                      ? 'border-primary-500 text-text-primary dark:text-white'
+                      : 'border-transparent text-text-secondary dark:text-gray-300 hover:text-text-primary dark:hover:text-white hover:border-gray-300'
                   }`}
                 >
                   {item.icon && <span className="mr-2">{item.icon}</span>}
@@ -88,22 +85,22 @@ export function Navbar() {
                 <div className="relative">
                   <button
                     type="button"
-                    className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 dark:focus:ring-offset-gray-800"
+                    className="flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-800"
                     onClick={toggleMenu}
                   >
-                    <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white">
+                    <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white">
                       {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
                     </div>
                   </button>
                   
                   {isMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
+                    <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-bg-card-light dark:bg-bg-card-dark ring-1 ring-black ring-opacity-5 z-10">
                       {authItems.map((item, index) => (
                         <React.Fragment key={index}>
                           {item.onClick ? (
                             <button
                               onClick={item.onClick}
-                              className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center"
+                              className="block w-full text-left px-4 py-2 text-sm text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
                             >
                               {item.icon}
                               {item.label}
@@ -111,7 +108,7 @@ export function Navbar() {
                           ) : (
                             <Link
                               to={item.path}
-                              className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 flex items-center"
+                              className="block px-4 py-2 text-sm text-text-primary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
                               onClick={() => setIsMenuOpen(false)}
                             >
                               {item.icon}
@@ -144,7 +141,7 @@ export function Navbar() {
             <ThemeToggle />
             <button
               type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-200 hover:text-gray-500 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+              className="inline-flex items-center justify-center p-2 rounded-md text-text-secondary dark:text-gray-200 hover:text-text-primary dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
               onClick={toggleMenu}
             >
               {isMenuOpen ? (
@@ -167,8 +164,8 @@ export function Navbar() {
                 to={item.path}
                 className={`block pl-3 pr-4 py-2 border-l-4 text-base font-medium ${
                   location.pathname === item.path
-                    ? 'border-purple-500 text-purple-700 dark:text-purple-400 bg-purple-50 dark:bg-gray-700'
-                    : 'border-transparent text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300'
+                    ? 'border-primary-500 text-primary-500 dark:text-primary-400 bg-primary-50 dark:bg-gray-700'
+                    : 'border-transparent text-text-secondary dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
@@ -182,7 +179,7 @@ export function Navbar() {
             {user && (
               <Link
                 to="/new-journey"
-                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300"
+                className="block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-text-secondary dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300"
                 onClick={() => setIsMenuOpen(false)}
               >
                 New Journey
@@ -194,13 +191,13 @@ export function Navbar() {
             {user && (
               <div className="flex items-center px-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 rounded-full bg-purple-500 flex items-center justify-center text-white">
+                  <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white">
                     {user.name ? user.name.charAt(0).toUpperCase() : user.email?.charAt(0).toUpperCase()}
                   </div>
                 </div>
                 <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800 dark:text-white">{user.name || 'User'}</div>
-                  <div className="text-sm font-medium text-gray-500 dark:text-gray-300">{user.email}</div>
+                  <div className="text-base font-medium text-text-primary dark:text-white">{user.name || 'User'}</div>
+                  <div className="text-sm font-medium text-text-secondary dark:text-gray-300">{user.email}</div>
                 </div>
               </div>
             )}
@@ -211,7 +208,7 @@ export function Navbar() {
                   {item.onClick ? (
                     <button
                       onClick={item.onClick}
-                      className="block w-full text-left px-4 py-2 text-base font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                      className="block w-full text-left px-4 py-2 text-base font-medium text-text-secondary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
                     >
                       {item.icon}
                       {item.label}
@@ -219,7 +216,7 @@ export function Navbar() {
                   ) : (
                     <Link
                       to={item.path}
-                      className="block px-4 py-2 text-base font-medium text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
+                      className="block px-4 py-2 text-base font-medium text-text-secondary dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       {item.icon}

@@ -99,7 +99,7 @@ export function CheckInForm({ journeyId, day, theme, onComplete }: CheckInFormPr
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
-              <PenSquare className="w-5 h-5 mr-2 text-purple-600" />
+              <PenSquare className="w-5 h-5 mr-2 text-primary-500" />
               Day {day} Check-In
             </CardTitle>
           </CardHeader>
@@ -107,7 +107,7 @@ export function CheckInForm({ journeyId, day, theme, onComplete }: CheckInFormPr
           <CardContent className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label htmlFor="textInput" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="textInput" className="block text-sm font-medium text-text-primary dark:text-white mb-1">
                   Text Input
                 </label>
                 <Input
@@ -118,13 +118,13 @@ export function CheckInForm({ journeyId, day, theme, onComplete }: CheckInFormPr
                   maxLength={500}
                   aria-describedby="textInputHelp"
                 />
-                <p id="textInputHelp" className="mt-1 text-sm text-gray-500">
+                <p id="textInputHelp" className="mt-1 text-sm text-text-secondary dark:text-gray-400">
                   {textInput.length}/500 characters
                 </p>
               </div>
               
               <div>
-                <label htmlFor="numericInput" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="numericInput" className="block text-sm font-medium text-text-primary dark:text-white mb-1">
                   Numeric Input
                 </label>
                 <Input
@@ -137,13 +137,13 @@ export function CheckInForm({ journeyId, day, theme, onComplete }: CheckInFormPr
                   placeholder="Enter a positive number"
                   aria-describedby="numericInputHelp"
                 />
-                <p id="numericInputHelp" className="mt-1 text-sm text-gray-500">
+                <p id="numericInputHelp" className="mt-1 text-sm text-text-secondary dark:text-gray-400">
                   Enter any positive number
                 </p>
               </div>
               
               <div>
-                <label htmlFor="photoUpload" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="photoUpload" className="block text-sm font-medium text-text-primary dark:text-white mb-1">
                   Photo Upload
                 </label>
                 <div className="mt-1 flex items-center">
@@ -167,38 +167,38 @@ export function CheckInForm({ journeyId, day, theme, onComplete }: CheckInFormPr
                     aria-describedby="photoUploadHelp"
                   />
                   {selectedFile && (
-                    <span className="ml-3 text-sm text-gray-500">
+                    <span className="ml-3 text-sm text-text-secondary dark:text-gray-400">
                       {selectedFile.name}
                     </span>
                   )}
                 </div>
-                <p id="photoUploadHelp" className="mt-1 text-sm text-gray-500">
+                <p id="photoUploadHelp" className="mt-1 text-sm text-text-secondary dark:text-gray-400">
                   Max size: 5MB. Formats: JPG, PNG
                 </p>
               </div>
             </div>
             
             <div className="space-y-2">
-              <label htmlFor="reflection" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="reflection" className="block text-sm font-medium text-text-primary dark:text-white">
                 Daily Reflection
               </label>
-              <p className="text-sm text-gray-600 italic mb-2">{reflectionPrompt}</p>
+              <p className="text-sm text-text-secondary dark:text-gray-400 italic mb-2">{reflectionPrompt}</p>
               <textarea
                 id="reflection"
                 value={reflection}
                 onChange={(e) => setReflection(e.target.value)}
                 placeholder="Take a moment to reflect on your journey today... (minimum 50 characters)"
-                className="w-full min-h-[120px] p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full min-h-[120px] p-3 border border-gray-300 dark:border-gray-600 rounded-md bg-bg-card-light dark:bg-bg-card-dark text-text-primary dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required
                 aria-describedby="reflectionHelp"
               />
-              <p id="reflectionHelp" className="text-sm text-gray-500">
+              <p id="reflectionHelp" className="text-sm text-text-secondary dark:text-gray-400">
                 {reflection.length}/50 characters minimum
               </p>
             </div>
             
             {reflection.length > 0 && reflection.length < 50 && (
-              <div className="flex items-start text-amber-600">
+              <div className="flex items-start text-amber-600 dark:text-amber-400">
                 <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
                 <p className="text-sm">
                   Please provide a more detailed reflection (at least 50 characters)

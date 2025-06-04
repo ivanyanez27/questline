@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { Navbar } from './components/Navbar';
@@ -17,8 +16,8 @@ function RequireAuth({ children }: { children: JSX.Element }) {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500" />
+      <div className="min-h-screen flex items-center justify-center dark:bg-bg-dark">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500" />
       </div>
     );
   }
@@ -80,11 +79,11 @@ function AppRoutes() {
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider>
         <AuthProvider>
           <JourneyProvider>
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+            <div className="min-h-screen bg-bg-light dark:bg-bg-dark text-text-primary dark:text-white transition-colors duration-200">
               <Navbar />
               <main>
                 <AppRoutes />
@@ -92,7 +91,7 @@ function App() {
               <Toaster 
                 position="top-right"
                 toastOptions={{
-                  className: 'dark:bg-gray-800 dark:text-white',
+                  className: 'dark:bg-bg-card-dark dark:text-white',
                 }} 
               />
             </div>
