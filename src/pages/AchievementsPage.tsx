@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Trophy, Award, Star, Target } from 'lucide-react';
 import { Achievement, UserAchievement, supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';

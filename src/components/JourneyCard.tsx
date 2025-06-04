@@ -1,10 +1,10 @@
-import { ChevronRight, BookOpen, Award, Calendar } from 'lucide-react';
+import { ChevronRight, BookOpen, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/Card';
 import { Button } from './ui/Button';
 import { ProgressPath } from './ui/ProgressPath';
 import { Journey } from '../lib/supabase';
-import { calculateJourneyProgress, formatDate, isJourneyActive } from '../lib/utils';
+import { calculateJourneyProgress, isJourneyActive } from '../lib/utils';
 
 type JourneyCardProps = {
   journey: Journey;
