@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronRight, BookOpen, Award, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/Card';
@@ -78,15 +77,15 @@ export function JourneyCard({ journey, compact = false }: JourneyCardProps) {
       </CardContent>
       
       <CardFooter className={compact ? 'p-4 pt-0' : 'p-6 pt-0'}>
-        <Button 
-          variant="primary" 
-          className="w-full flex justify-between items-center"
-          as={Link}
-          to={`/journey/${journey.id}`}
-        >
-          {isActive ? 'Continue Journey' : journey.completed_at ? 'View Summary' : 'Begin Journey'}
-          <ChevronRight className="w-4 h-4 ml-2" />
-        </Button>
+        <Link to={`/journey/${journey.id}`} className="w-full">
+          <Button 
+            variant="primary" 
+            className="w-full flex justify-between items-center"
+          >
+            {isActive ? 'Continue Journey' : journey.completed_at ? 'View Summary' : 'Begin Journey'}
+            <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

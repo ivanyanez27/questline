@@ -17,7 +17,7 @@ export interface Journey {
   description: string;
   habit: string;
   duration: number;
-  theme: string;
+  theme: 'fantasy' | 'sci-fi' | 'adventure' | 'mystery';
   started_at: string;
   completed_at: string | null;
   current_day: number;
@@ -34,6 +34,7 @@ export interface CheckIn {
   numeric_input: number;
   photo_url: string | null;
   reflection: string;
+  truth_rating: number;
   created_at: string;
 }
 
@@ -45,6 +46,31 @@ export interface ReflectionGate {
   prompt: string;
   response: string | null;
   created_at: string;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  image_url: string | null;
+  points_reward: number;
+  criteria_value: number;
+  created_at: string;
+}
+
+export interface User {
+  id: string;
+  email?: string;
+  name?: string;
+  created_at: string;
+}
+
+export interface UserAchievement {
+  id: string;
+  user_id: string;
+  achievement_id: string;
+  earned_at: string;
+  achievement?: Achievement;
 }
 
 // Initialize Supabase client with auth configuration
